@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maths Mastery: Factors & Multiples</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #d1d8e0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #quiz-container {
+            background: white;
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        h1 { color: var(--dark); text-align: center; margin-top: 0; }
+
+        .progress-bar {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: 0.4s;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        button.option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        button.option-btn:hover {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+
+        .hint-container {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .hint-btn {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #hint-text {
+            background: #fff9e6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            font-size: 14px;
+            color: #665;
+            border-left: 4px solid var(--secondary);
+        }
+
+        #results {
+            display: none;
+            text-align: center;
+        }
+
+        .review-item {
+            text-align: left;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .correct-bg { background: #d4edda; color: #155724; }
+        .wrong-bg { background: #f8d7da; color: #721c24; }
+
+        .share-btns {
+            margin: 25px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .share-btn {
+            padding: 12px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            flex: 1;
+            min-width: 140px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <div id="quiz-header">
+        <h1>Factors & Multiples</h1>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <p id="progress-text" style="text-align:center; font-weight:bold; color:var(--primary)"></p>
+    </div>
+
+    <div id="quiz-content">
+        <h3 id="question-text" style="min-height: 50px;"></h3>
+        <div class="options-grid" id="options"></div>
+        <div class="hint-container">
+            <button class="hint-btn" onclick="toggleHint()">💡 Stuck? Get a hint</button>
+            <div id="hint-text"></div>
+        </div>
+    </div>
+
+    <div id="results">
+        <h2 style="color: var(--primary);">Test Complete!</h2>
+        <div id="score-circle" style="font-size: 48px; margin: 20px 0;"></div>
+        <div id="review-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px; border: 1px solid #eee; padding: 10px;"></div>
+
+        <div class="share-btns">
+            <a id="whatsapp-link" class="share-btn" style="background:#25D366">WhatsApp Results</a>
+            <a id="email-link" class="share-btn" style="background:var(--dark)">Email Teacher</a>
+        </div>
+        <button onclick="location.reload()" style="background:none; border:none; color:var(--primary); cursor:pointer; text-decoration:underline;">Try Again</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "Which of these is a multiple of 8?", options: ["2", "4", "12", "24"], correct: 3, hint: "Multiples are in the 'times table' of the number. 8, 16, 24..." },
+        { q: "Which of these is a factor of 15?", options: ["5", "30", "45", "60"], correct: 0, hint: "A factor divides into the number exactly with no remainder." },
+        { q: "What is the only even prime number?", options: ["0", "2", "4", "6"], correct: 1, hint: "All other even numbers can be divided by 2, so they aren't prime!" },
+        { q: "Find the Highest Common Factor (HCF) of 14 and 21.", options: ["1", "2", "7", "42"], correct: 2, hint: "List factors of 14: (1,2,7,14). List factors of 21: (1,3,7,21). What's the biggest common one?" },
+        { q: "Find the Lowest Common Multiple (LCM) of 3 and 5.", options: ["1", "8", "15", "30"], correct: 2, hint: "Count in 3s and 5s. What is the first number that appears in both lists?" },
+        { q: "What is the prime factor decomposition of 12?", options: ["2 x 2 x 3", "2 x 6", "3 x 4", "1 x 2 x 3"], correct: 0, hint: "Break it down: 12 = 2 x 6. Then break 6 into 2 x 3. Only prime numbers allowed!" },
+        { q: "Which of these numbers is prime?", options: ["9", "15", "21", "23"], correct: 3, hint: "9=3x3, 15=3x5, 21=3x7. One of these has no other factors except 1 and itself." },
+        { q: "If the HCF of two numbers is 1, they are called 'co-prime'. Which pair is co-prime?", options: ["4 and 8", "9 and 10", "6 and 9", "10 and 20"], correct: 1, hint: "Which pair shares NO factors other than 1?" },
+        { q: "A bell rings every 6 minutes. Another rings every 8 minutes. If they ring together now, how many minutes until they ring together again?", options: ["14 mins", "48 mins", "24 mins", "2 mins"], correct: 2, hint: "This is an LCM problem. Find the LCM of 6 and 8." },
+        { q: "Find the HCF of 40 and 60.", options: ["10", "20", "240", "5"], correct: 1, hint: "What is the biggest number that goes into both 40 and 60?" },
+        { q: "What is the prime factor decomposition of 50?", options: ["5 x 10", "2 x 5 x 5", "2 x 25", "5 x 5 x 5"], correct: 1, hint: "Prime numbers only! 50 = 2 x 25... then break down 25." }
+    ];
+
+    let currentQ = 0;
+    let score = 0;
+    let userAnswers = [];
+
+    function loadQuestion() {
+        const q = questions[currentQ];
+        document.getElementById("progress-fill").style.width = `${((currentQ) / questions.length) * 100}%`;
+        document.getElementById("progress-text").innerText = `Question ${currentQ + 1} of ${questions.length}`;
+        document.getElementById("question-text").innerText = q.q;
+        document.getElementById("hint-text").innerText = q.hint;
+        document.getElementById("hint-text").style.display = "none";
+
+        const optionsDiv = document.getElementById("options");
+        optionsDiv.innerHTML = "";
+        q.options.forEach((opt, index) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = opt;
+            btn.onclick = () => handleAnswer(index);
+            optionsDiv.appendChild(btn);
+        });
+    }
+
+    function toggleHint() {
+        const ht = document.getElementById("hint-text");
+        ht.style.display = ht.style.display === "none" ? "block" : "none";
+    }
+
+    function handleAnswer(index) {
+        const isCorrect = index === questions[currentQ].correct;
+        if (isCorrect) score++;
+        userAnswers.push({
+            q: questions[currentQ].q,
+            correct: isCorrect,
+            userAns: questions[currentQ].options[index],
+            correctAns: questions[currentQ].options[questions[currentQ].correct]
+        });
+
+        currentQ++;
+        if (currentQ < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        document.getElementById("quiz-content").style.display = "none";
+        document.getElementById("quiz-header").style.display = "none";
+        const resDiv = document.getElementById("results");
+        resDiv.style.display = "block";
+
+        const percent = Math.round((score / questions.length) * 100);
+        document.getElementById("score-circle").innerText = `${percent}%`;
+
+        const reviewList = document.getElementById("review-list");
+        userAnswers.forEach((item, i) => {
+            const div = document.createElement("div");
+            div.className = `review-item ${item.correct ? 'correct-bg' : 'wrong-bg'}`;
+            div.innerHTML = `<strong>Q${i+1}:</strong> ${item.correct ? '✓ Correct' : '✗ Wrong (You said ' + item.userAns + ')'}`;
+            reviewList.appendChild(div);
+        });
+
+        const shareMsg = `I scored ${score}/12 (${percent}%) on the Factors & Multiples Quiz!`;
+        document.getElementById("whatsapp-link").href = `https://wa.me/?text=${encodeURIComponent(shareMsg)}`;
+        document.getElementById("email-link").href = `mailto:?subject=Maths Quiz Results&body=${encodeURIComponent(shareMsg)}`;
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+</html>
